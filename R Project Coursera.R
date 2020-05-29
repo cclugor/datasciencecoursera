@@ -1,2 +1,2 @@
-## Coursera R Project
+## week 3- Coursera R Project
 ## Cindy Lugo
