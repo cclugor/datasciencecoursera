@@ -1,4 +1,4 @@
-## week 4 - Coursera R Project
+## week 4 - Coursera R Project --------
 ## Cindy Lugo
 
 setwd("C:/Users/lugor/Downloads/rprog_data_ProgAssignment3-data")
@@ -7,7 +7,7 @@ outcome <- read.csv("outcome-of-care-measures.csv",na.strings="Not Available",st
 head(outcome)
 ncol(outcome)
 
-### hist of 30-day death rates from heart attack ####
+### hist of 30-day death rates from heart attack ###
 outcome[, 11] <- as.numeric(outcome[, 11])
 ## You may get a warning about NAs being introduced; that is okay
 hist(outcome[, 11])
@@ -124,8 +124,8 @@ num<-3
 
 rankhospital(state, outcome, -5)
 rankhospital("MD", "heart failure", -5)
-#### cierre funci?n #2 ######
 
+## Función rankall para que se imprima el rank seleccionado para cada uno de los estados
 rankall <- function(outcome, num = "best") {
   ## Read outcome data
     x<-read.csv("outcome-of-care-measures.csv",na.strings="	Not Available",stringsAsFactors=FALSE)
