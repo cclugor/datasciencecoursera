@@ -3,7 +3,7 @@
 
 setwd("C:/Users/lugor/Downloads/rprog_data_ProgAssignment3-data")
 
-outcome <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+outcome <- read.csv("outcome-of-care-measures.csv",na.strings="Not Available",stringsAsFactors=FALSE)
 head(outcome)
 ncol(outcome)
 
@@ -16,7 +16,7 @@ hist(outcome[, 11])
 #### Finding the best hospital in a state ####
 best <- function(state, outcome) {
   ## Read outcome data
-  x<-read.csv("outcome-of-care-measures.csv")
+  x<-read.csv("outcome-of-care-measures.csv",na.strings="	Not Available",stringsAsFactors=FALSE)
   ## Check that state and outcome are valid
   if(all(state %in% x$State)==F){
     stop("invalid state")
@@ -75,7 +75,7 @@ num<-"worst"
 
 rankhospital <- function(state, outcome, num = "best") {
   ## Read outcome data
-  x<-read.csv("outcome-of-care-measures.csv")
+  x<-read.csv("outcome-of-care-measures.csv",na.strings="	Not Available",stringsAsFactors=FALSE)
   num<-ifelse(num=="worst",-1,ifelse(num=="best",1,num))
   ## Check that state and outcome are valid
   if(all(state %in% x$State)==F){
@@ -128,7 +128,7 @@ rankhospital("MD", "heart failure", -5)
 
 rankall <- function(outcome, num = "best") {
   ## Read outcome data
-    x<-read.csv("outcome-of-care-measures.csv")
+    x<-read.csv("outcome-of-care-measures.csv",na.strings="	Not Available",stringsAsFactors=FALSE)
   num<-ifelse(num=="worst",-1,ifelse(num=="best",1,num))
   ## Check that state and outcome are valid
   if(all(outcome %in% c("heart attack","pneumonia","heart failure"))==F){
@@ -137,9 +137,13 @@ rankall <- function(outcome, num = "best") {
   
       ## Return hospital name in that state with lowest 30-day death
     class(x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)<-"numeric"
+    #x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack <- as.numeric(x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)
     class(x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure)<-"numeric"
+    #x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure <- as.numeric(x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure)
     class(x$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia)<-"numeric"
+    #x$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia <- as.numeric(x$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia)
     
+        
     if(outcome=="heart attack"){
       best<-x%>%
         group_by(State)%>%
@@ -147,7 +151,8 @@ rankall <- function(outcome, num = "best") {
         mutate(rank=row_number(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack))%>%
         top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)%>%
         select(Hospital.Name,rank,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)%>%
-        arrange(rank)
+        arrange(State)
+      best<-best[best$rank==abs(num),]
       return(best)
     } else if(outcome=="heart failure"){
       best<-x%>%
@@ -157,7 +162,8 @@ rankall <- function(outcome, num = "best") {
         mutate(rank=row_number(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure))%>%
         top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure)%>%
         select(Hospital.Name,rank,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure)%>%
-        arrange(rank)
+        arrange(State)
+      best<-best[best$rank==abs(num),]
       return(best)
     }  else if(outcome=="pneumonia"){
       best<-x%>%
@@ -166,14 +172,17 @@ rankall <- function(outcome, num = "best") {
         mutate(rank=row_number(Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia))%>%
         top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia)%>%
         select(Hospital.Name,rank,Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia)%>%
-        arrange(State,rank)
+        arrange(State)
+        best<-best[best$rank==abs(num),]
       return(best)
     }
   }
 }
 
 rankall(outcome, 1)
+rankall(outcome, 20)
 
+num<-20
 best("SC", "heart attack")
 dim(x)
 x$`heart attack`<-x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack
@@ -182,12 +191,17 @@ x$`pneumonia`<-x$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia
 x$outcome
 ## rate
 best("NY", "pneumonia")
-
+num<--1
 best<-x%>%
-  mutate(rank=dense_rank(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack))
-top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)%>%
-  select(Hospital.Name)%>%
-  arrange(Hospital.Name)
+  filter(State=="AK")%>%
+  select(Hospital.Name,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)
+  arrange(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack,Hospital.Name)%>%
+  mutate(rank=row_number(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack))%>%
+  top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)%>%
+  select(Hospital.Name,rank,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack) %>%
+  arrange(State)
+best<-best[best$rank==abs(num),]
+return(best)
 
 
 best<-x%>%
@@ -199,7 +213,14 @@ best[1,1]
 
 yyy<-x[,c(2,7,11,17,23)]
 
+rankhospital("AK", "heart attack", 2)
+
+r <- rankall("heart failure", 11)
+as.character(subset(r, State == "AK")$Hospital.Name)
+
 colnames(x)
+head(rankall("heart attack", 20), 10)
+head(rankall("heart attack", 20), 15)
 
 best("AK", "pneumonia")
 rankhospital("NC", "heart attack", 2)
@@ -237,20 +258,27 @@ rankhospital("NY", "heart attack", 7)
 # ok
 
 r <- rankall("heart attack", 4)
-as.character(subset(r, state == "HI")$hospital)
+as.character(subset(r, State == "HI")$Hospital.Name)
 #ok
 
 r <- rankall("pneumonia", "worst")
-as.character(subset(r, state == "NJ")$hospital)
+as.character(subset(r, State == "NJ")$Hospital.Name)
+
+r <- rankall("pneumonia", 5000)
+as.character(subset(r, State == "NJ")$Hospital.Name)
+
 
 #not ok
-
-
 r <- rankall("heart failure", 10)
 as.character(subset(r, state == "NV")$hospital)
 
-#ok but not the last one: SPRING VALLEY HOSPITAL MEDICAL CENTER"
+r <- rankall("heart failure", 10)
+as.character(subset(r, State == "NV")$Hospital.Name)
 
+#ok
+
+## hacen falta dos detalles, el primero es que si hay más rank que datos se entregue NA
+## hace falta que se el worst de la última función imprima correctamente porque no lo está haciendo bien
 # Write a function called best that take two arguments: the 2-character abbreviated name of a state and an
 
 # outcome name. The function reads the outcome-of-care-measures.csv file and returns a character vector
