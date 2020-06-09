@@ -174,14 +174,14 @@ rankall <- function(outcome, num = "best") {
 
 rankall(outcome, 1)
 
-
+best("SC", "heart attack")
 dim(x)
 x$`heart attack`<-x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack
 x$`heart failure`<-x$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure
 x$`pneumonia`<-x$Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia
 x$outcome
 ## rate
-
+best("NY", "pneumonia")
 
 best<-x%>%
   mutate(rank=dense_rank(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack))
@@ -197,11 +197,62 @@ best<-x%>%
   arrange(Hospital.Name)
 best[1,1]
 
+yyy<-x[,c(2,7,11,17,23)]
+
+colnames(x)
+
+best("AK", "pneumonia")
+rankhospital("NC", "heart attack", 2)
+rankhospital("WA", "heart attack", 7)
+rankhospital("WA", "heart attack", 7)
+rankhospital("TX", "pneumonia", 15)
+rankhospital("NY", "heart attack", 7)
+r <- rankall("heart attack", 4)
+as.character(subset(r, State == "HI")$Hospital.Name)
+
+r <- rankall("pneumonia", 1)
+as.character(subset(r, State == "NJ")$Hospital.Name)
+r <- rankall("heart failure", 10)
+as.character(subset(r, State == "NV")$Hospital.Name)
 
 
 
-# 
+best("SC", "heart attack")
+# ok
+
+best("NY", "pneumonia")
+
+best("AK", "pneumonia")
+
+rankhospital("NC", "heart attack", "worst")
+# not ok
+
+rankhospital("WA", "heart attack", 7)
+#ok
+
+rankhospital("TX", "pneumonia", 10)
+# not ok
+
+rankhospital("NY", "heart attack", 7)
+# ok
+
+r <- rankall("heart attack", 4)
+as.character(subset(r, state == "HI")$hospital)
+#ok
+
+r <- rankall("pneumonia", "worst")
+as.character(subset(r, state == "NJ")$hospital)
+
+#not ok
+
+
+r <- rankall("heart failure", 10)
+as.character(subset(r, state == "NV")$hospital)
+
+#ok but not the last one: SPRING VALLEY HOSPITAL MEDICAL CENTER"
+
 # Write a function called best that take two arguments: the 2-character abbreviated name of a state and an
+
 # outcome name. The function reads the outcome-of-care-measures.csv file and returns a character vector
 # with the name of the hospital that has the best (i.e. lowest) 30-day mortality for the specified outcome
 # in that state. The hospital name is the name provided in the Hospital.Name variable. The outcomes can
