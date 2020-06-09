@@ -124,7 +124,7 @@ num<-3
 
 rankhospital(state, outcome, -5)
 rankhospital("MD", "heart failure", -5)
-#### cierre función #2 ######
+#### cierre funci?n #2 ######
 
 rankall <- function(outcome, num = "best") {
   ## Read outcome data
@@ -148,29 +148,31 @@ rankall <- function(outcome, num = "best") {
         top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)%>%
         select(Hospital.Name,rank,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack)%>%
         arrange(rank)
-      return(best[1:abs(num),1:3])
+      return(best)
     } else if(outcome=="heart failure"){
       best<-x%>%
-        filter(State==state)%>%
+        group_by(State)%>%
         select(Hospital.Name,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure)%>%
         arrange(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure,Hospital.Name)%>%
         mutate(rank=row_number(Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure))%>%
         top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure)%>%
         select(Hospital.Name,rank,Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure)%>%
         arrange(rank)
-      return(best[1:abs(num),1:3])
+      return(best)
     }  else if(outcome=="pneumonia"){
       best<-x%>%
-        filter(State==state)%>%
+        group_by(State)%>%
         arrange(Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia,Hospital.Name)%>%
         mutate(rank=row_number(Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia))%>%
         top_n(-num,wt=Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia)%>%
         select(Hospital.Name,rank,Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia)%>%
-        arrange(rank)
-      return(best[1:abs(num),1:3])
+        arrange(State,rank)
+      return(best)
     }
   }
 }
+
+rankall(outcome, 1)
 
 
 dim(x)
@@ -280,7 +282,7 @@ highlight_key(iris) %>%
 
 sin_na_1<-sin_na %>%
   ungroup()%>%
-  mutate(`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="GUANTES PARA EXAMEN, NO ESTÉRILES", "GUANTES PARA EXAMEN"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="RESPIRADORES CON MASCARA DE FILTRADO (MASCARA DE ALTA EFICIENCIA O MASCARA N95)", "MASCARA N95"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="SOLUCIÓN O GEL DESINFECTANTE A BASE DE ALCOHOL", "GEL DESINFECTANTE"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="JABÓN DE TOCADOR EN BARRA", "JABÓN DE TOCADOR"))
+  mutate(`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="GUANTES PARA EXAMEN, NO EST?RILES", "GUANTES PARA EXAMEN"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="RESPIRADORES CON MASCARA DE FILTRADO (MASCARA DE ALTA EFICIENCIA O MASCARA N95)", "MASCARA N95"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="SOLUCI?N O GEL DESINFECTANTE A BASE DE ALCOHOL", "GEL DESINFECTANTE"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="JAB?N DE TOCADOR EN BARRA", "JAB?N DE TOCADOR"))
 
 save(sin_na_1,file = "G:/Mi unidad/2020 SIC/Docs Coyuntura informe Super DANE/Resultados/sin_na_1.RData")
 x<-ggplot(sin_na_1,aes(y=`Precio/Kg`,x=`Nombre DANE`))+geom_boxplot()+theme(axis.text.x = element_text(angle = 90,size=10))
@@ -298,15 +300,15 @@ class(Alimentos)
 
 sin_na_1<-sin_na %>%
   ungroup()%>%
-  mutate(Categoria=replace(Categoria, `Nombre DANE`=="GUANTES PARA EXAMEN, NO ESTÉRILES", "GUANTES PARA EXAMEN"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="RESPIRADORES CON MASCARA DE FILTRADO (MASCARA DE ALTA EFICIENCIA O MASCARA N95)", "MASCARA N95"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="SOLUCIÓN O GEL DESINFECTANTE A BASE DE ALCOHOL", "GEL DESINFECTANTE"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="JABÓN DE TOCADOR EN BARRA", "JABÓN DE TOCADOR"))
+  mutate(Categoria=replace(Categoria, `Nombre DANE`=="GUANTES PARA EXAMEN, NO EST?RILES", "GUANTES PARA EXAMEN"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="RESPIRADORES CON MASCARA DE FILTRADO (MASCARA DE ALTA EFICIENCIA O MASCARA N95)", "MASCARA N95"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="SOLUCI?N O GEL DESINFECTANTE A BASE DE ALCOHOL", "GEL DESINFECTANTE"),`Nombre DANE`=replace(`Nombre DANE`, `Nombre DANE`=="JAB?N DE TOCADOR EN BARRA", "JAB?N DE TOCADOR"))
 
 sin_na_1[sin_na_1$`Nombre DANE` %in% Alimentos[2:3],]
 
-Alimentos<-c("LECHE LARGA VIDA", "ARROZ PARA SECO","AZÚCAR REFINADA", "HUEVO", "ACEITE DE GIRASOL", "ARVEJA","NARANJA", "CEBOLLA CABEZONA","PAPA NEGRA","QUESO CAMPESINO", "CEBOLLA EN RAMA","PAPA CRIOLLA")
+Alimentos<-c("LECHE LARGA VIDA", "ARROZ PARA SECO","AZ?CAR REFINADA", "HUEVO", "ACEITE DE GIRASOL", "ARVEJA","NARANJA", "CEBOLLA CABEZONA","PAPA NEGRA","QUESO CAMPESINO", "CEBOLLA EN RAMA","PAPA CRIOLLA")
 
-Medicamentos<-c("ACETAMINOFÉN","AMOXICILINA","IBUPROFENO","IVERMECTINA","NAPROXENO","HIDROXICLOROQUINA")
+Medicamentos<-c("ACETAMINOF?N","AMOXICILINA","IBUPROFENO","IVERMECTINA","NAPROXENO","HIDROXICLOROQUINA")
 
-Elem_protec<-c("JABÓN DE TOCADOR","GEL DESINFECTANTE","MASCARA N95","GUANTES QUIRÚRGICOS","GUANTES PARA EXAMEN")
+Elem_protec<-c("JAB?N DE TOCADOR","GEL DESINFECTANTE","MASCARA N95","GUANTES QUIR?RGICOS","GUANTES PARA EXAMEN")
 
 Aliment<-sin_na_1%>%
   filter(`Nombre DANE` %in% Alimentos)
@@ -347,7 +349,7 @@ library(plotly)
 #load("G:/Mi unidad/2020 SIC/Docs Coyuntura informe Super DANE/Resultados/sin_na_1.RData")
 zz<-ggplot(sin_na_1,xlab="Producto",aes(y=variacion,x=`Nombre DANE`,fill=`Nombre DANE`,color=`Nombre DANE`))+geom_boxplot(alpha=0.3,outlier.colour="gray", outlier.shape=16,outlier.size=1)+theme(axis.text.x = element_text(angle = 90,size=10))
 ggplotly(zz)
-# incluir la tabla de muertes por millón de los diferentes países 
+# incluir la tabla de muertes por mill?n de los diferentes pa?ses 
 ```
 
 
@@ -489,7 +491,7 @@ hcmap("countries/co/co-all", data = data_colombia, value = "X",
       borderColor = "#FAFAFA", borderWidth = 0.5,
       tooltip = list(valueDecimals = 2, valuePrefix = "$", valueSuffix = " USD")) %>%
   hc_mapNavigation(enabled = TRUE) %>%
-  hc_title(text = "Mapa dinámico de Colombia - R Users Group - Colombia",
+  hc_title(text = "Mapa din?mico de Colombia - R Users Group - Colombia",
            align = "center", style = list(color = "#000000", fontWeight = "bold"))
 
 easypackages::libraries(c("rjson", "stringr"))
@@ -506,14 +508,14 @@ glimpse(poblacion_provincia_ecuador_2010)
 
 
 highchart() %>%
-  hc_title(text = "<i>Mapa dinámico de Ecuador</i> - <b>R Users Group - Ecuador</b>",
+  hc_title(text = "<i>Mapa din?mico de Ecuador</i> - <b>R Users Group - Ecuador</b>",
            margin = 20, align = "center",
            style = list(color = "#08338F", useHTML = TRUE)) %>% 
-  hc_subtitle(text = "Población por provincia",
+  hc_subtitle(text = "Poblaci?n por provincia",
               align = "center",
               style = list(color = "#0C5C9E", fontWeight = "bold")) %>% 
   hc_tooltip(followPointer =  FALSE) %>%
-  hc_add_series_map(ecuador, poblacion_provincia_ecuador_2010, name = "Población",
+  hc_add_series_map(ecuador, poblacion_provincia_ecuador_2010, name = "Poblaci?n",
                     value = "Poblacion", joinBy = c("name", "Provincia"),
                     dataLabels = list(enabled = TRUE,
                                       format = '{point.properties.woe-name}')) %>%
